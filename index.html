@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        table {
+            width: 70%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        #total {
+            font-weight: bold;
+        }
+
+        .controls {
+            margin-top: 20px;
+        }
+
+        .controls button {
+            background-color: green;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .controls button:hover {
+            background-color: darkgreen;
+        }
+    </style>
+    <title>Korpa</title>
+</head>
+
+<body>
+
+    <h2>Korpa</h2>
+
+    <div id="controls" class="controls">
+        <label for="addItem">Dodaj</label>
+        <input type="text" id="addItem" placeholder="Naziv">
+        <input type="number" id="addQuantity" placeholder="Kolicina">
+        <input type="number" id="addPrice" placeholder="Cena">
+        <button onclick="addItem()">Dodaj</button>
+    </div>
+
+    <table id="cart">
+        <thead>
+            <tr>
+                <th>Naziv</th>
+                <th>Kolicina</th>
+                <th>Cena</th>
+                <th>Ukupno</th>
+            </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+        <tfoot>
+            <tr id="total">
+                <td colspan="3">Ukupno:</td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <script>
+        let items = [
+            { "naziv": "Chair", "komada": 1, "cena": 233 },
+            { "naziv": "Car", "komada": 3, "cena": 324 },
+            { "naziv": "Computer", "komada": 2, "cena": 319 },
+            { "naziv": "Chair", "komada": 3, "cena": 405 },
+            { "naziv": "Pizza", "komada": 3, "cena": 121 },
+            { "naziv": "Chips", "komada": 3, "cena": 58 },
+            { "naziv": "Table", "komada": 2, "cena": 324 },
+            { "naziv": "Sausages", "komada": 3, "cena": 204 },
+            { "naziv": "Pants", "komada": 3, "cena": 335 },
+            { "naziv": "Table", "komada": 1, "cena": 350 }
+        ];
+
+        function renderTable() {
+            const tableBody = document.querySelector('#cart tbody');
+            tableBody.innerHTML = '';
+
+            let total = 0;
+
+            items.forEach(item => {
+                const row = tableBody.insertRow();
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                const quantityInput = document.createElement('input');
+                quantityInput.type = 'number';
+                quantityInput.value = item.komada;
+                quantityInput.min = 0;
+                quantityInput.addEventListener('change', () => updateQuantity(item, quantityInput));
+                cell2.appendChild(quantityInput);
+
+                const cell3 = row.insertCell(2);
+                const cell4 = row.insertCell(3);
+
+                cell1.textContent = item.naziv;
+                cell3.textContent = item.cena;
+                const totalPrice = item.komada * item.cena;
+                cell4.textContent = totalPrice;
+
+                total += totalPrice;
+            });
+
+            const totalCell = document.querySelector('#total td:last-child');
+            totalCell.textContent = total;
+        }
+
+        function addItem() {
+            const itemName = document.getElementById('addItem').value;
+            const quantity = parseInt(document.getElementById('addQuantity').value);
+            const price = parseInt(document.getElementById('addPrice').value);
+
+            if (itemName && !isNaN(quantity) && !isNaN(price)) {
+                items.push({ "naziv": itemName, "komada": quantity, "cena": price });
+                renderTable();
+            }
+        }
+
+        function updateQuantity(item, input) {
+            const newQuantity = parseInt(input.value);
+
+            if (!isNaN(newQuantity) && newQuantity >= 0) {
+                item.komada = newQuantity;
+                renderTable();
+            } else {
+                input.value = item.komada;
+            }
+        }
+
+        renderTable();
+    </script>
+
+</body>
+
+</html>
